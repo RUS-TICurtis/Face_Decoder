@@ -96,3 +96,5 @@ storage/reports/*
 
 storage/cache/*
 !storage/cache/.gitkeep
+
+.agent/*
