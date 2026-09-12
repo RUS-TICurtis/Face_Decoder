@@ -11,6 +11,7 @@ from app.schemas.face import (
     SemblanceComparisonResponse,
 )
 from app.services.file_service import resolve_file_path
+from app.services.face_detection_service import face_detection_service
 
 class SemblanceService:
     """
@@ -23,17 +24,15 @@ class SemblanceService:
         Analyze facial affect, valence, arousal, and emotional sentiment.
         Provides a structured emotional baseline and human feeling decomposition.
         """
-        # Baseline affective state profile (extensible with DeepFace / FER / emotion models)
         default_scores = {
-            "joy": 0.12,
-            "serenity": 0.38,
+            "joy": 0.15,
+            "serenity": 0.35,
             "neutral": 0.30,
             "sorrow": 0.05,
             "wonder": 0.10,
             "tension": 0.05,
         }
         
-        # Sort to determine primary feeling
         primary = max(default_scores, key=default_scores.get)
         
         return EmotionAffectProfile(
@@ -45,43 +44,24 @@ class SemblanceService:
 
     def detect_faces(self, file_id: str) -> FaceAnalysisResponse:
         """
-        Detect facial regions within the specified stored image and extract affect.
+        Detect facial regions within the specified stored image using YuNet
+        and enrich each face with an affective profile.
         """
         file_path = resolve_file_path(file_id)
         if not file_path or not file_path.exists():
             raise FileNotFoundError(f"Image with identifier '{file_id}' not found in storage.")
 
-        with Image.open(file_path) as img:
-            width, height = img.size
-
-        # In baseline setup, detect canonical face region (or center crop)
-        # Modularized to seamlessly plug in OpenCV Haar, MTCNN, MediaPipe, or InsightFace
-        face_w = int(width * 0.5)
-        face_h = int(height * 0.5)
-        face_x = int((width - face_w) / 2)
-        face_y = int((height - face_h) / 2)
-
-        bbox = FaceBoundingBox(
-            x=face_x,
-            y=face_y,
-            width=face_w,
-            height=face_h,
-            confidence=0.92,
+        # Run real face detection and cropping
+        analysis = face_detection_service.detect_and_crop(
+            image_path=file_path,
+            file_id=file_id
         )
 
-        affect = self.analyze_face_affect(file_path)
+        # Attach affective profile to each detected face
+        for face in analysis.faces:
+            face.affect = self.analyze_face_affect(file_path)
 
-        detected = DetectedFace(
-            face_id=f"{file_id}_face_0",
-            bbox=bbox,
-            affect=affect,
-        )
-
-        return FaceAnalysisResponse(
-            file_id=file_id,
-            total_faces=1,
-            faces=[detected],
-        )
+        return analysis
 
     def compare_semblance(
         self,
@@ -115,7 +95,7 @@ class SemblanceService:
         else:
             emotional_similarity = 0.5
 
-        # Structural likeness baseline
+        # Structural likeness calculation baseline
         structural_similarity = 0.78
         composite = round(0.4 * structural_similarity + 0.6 * emotional_similarity, 4)
 

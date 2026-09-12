@@ -15,6 +15,17 @@ class ImageUploadResponse(BaseModel):
     size_bytes: int
     status: str = "uploaded successfully"
 
+class LandmarkPoint(BaseModel):
+    x: float
+    y: float
+
+class FacialLandmarks(BaseModel):
+    right_eye: LandmarkPoint
+    left_eye: LandmarkPoint
+    nose_tip: LandmarkPoint
+    mouth_right: LandmarkPoint
+    mouth_left: LandmarkPoint
+
 class FaceBoundingBox(BaseModel):
     x: int
     y: int
@@ -47,12 +58,17 @@ class EmotionAffectProfile(BaseModel):
 
 class DetectedFace(BaseModel):
     face_id: str
+    index: int = 0
     bbox: FaceBoundingBox
+    landmarks: Optional[FacialLandmarks] = None
+    confidence: float = 1.0
+    crop_filename: Optional[str] = None
     crop_path: Optional[str] = None
     affect: Optional[EmotionAffectProfile] = None
 
 class FaceAnalysisResponse(BaseModel):
     file_id: str
+    image_dimensions: Optional[ImageDimensions] = None
     total_faces: int
     faces: List[DetectedFace]
 

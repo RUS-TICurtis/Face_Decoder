@@ -8,18 +8,20 @@
 - [x] Build upload pipeline with UUID tracking, header validation, and metadata extraction.
 - [x] Author comprehensive documentation (`README.md`, `ARCHITECTURE.md`, `FILING_AND_STORAGE_SYSTEM.md`).
 
-## Phase 2: Computer Vision & Landmark Extraction
-- [ ] Integrate lightweight face detection backend (MediaPipe Face Mesh or OpenCV YuNet).
-- [ ] Implement face alignment and normalization (eye-level rotation, standard bounding crop).
-- [ ] Store cropped face chips into `storage/processed_faces/`.
+## Phase 2: Computer Vision & Landmark Extraction (Completed / Week 3 Milestone)
+- [x] Integrate high-precision face detection backend (OpenCV YuNet ONNX with automated model caching).
+- [x] Extract 5 key facial landmarks: right eye, left eye, nose tip, mouth right, mouth left.
+- [x] Implement boundary-safe aspect-ratio padding and automatic face chip cropping.
+- [x] Store cropped face chips into `storage/processed_faces/` and expose via `/static/faces/`.
+- [x] Provide endpoints: `POST /api/v1/faces/detect/{file_id}` and `POST /api/v1/faces/detect-and-crop`.
 
-## Phase 3: Deep Affect & Human Feeling Analysis
-- [ ] Train or integrate deep affective models (e.g. FER2013 fine-tuned, EmoNet, or HSEmotion).
-- [ ] Compute continuous Valence-Arousal dimensional metrics alongside discrete emotion classes.
-- [ ] Implement micro-expression detection across localized regions (eyes, brow, mouth curvature).
+## Phase 3: Face Embeddings & Similarity (Weeks 5–8)
+- [ ] Implement ArcFace / SFace 512-dimensional facial embedding generation.
+- [ ] Integrate FAISS vector index for nearest-neighbor similarity search.
+- [ ] Pairwise structural likeness computation (cosine similarity & Euclidean distance).
 
-## Phase 4: Semblance Engine & Comparison Matrix
-- [ ] Implement high-dimensional facial embeddings (ArcFace or FaceNet).
-- [ ] Develop cosine similarity and Riemannian metric comparisons for geometric semblance.
-- [ ] Build multi-subject comparison matrix and PDF/JSON report generation into `storage/reports/`.
-- [ ] Interactive Web UI for side-by-side image comparison with visual semblance heatmaps.
+## Phase 4: Archetype Modeling & Semblance Analysis (Weeks 9–10)
+- [ ] User archetype base-face model: centroid vector synthesis $\frac{1}{N}\sum \vec{v}_i$.
+- [ ] Likeability & human feeling decomposition: Symmetry, Averageness, Warmth (smile), and Structural Softness.
+- [ ] Natural language Explanation Engine converting metrics to human-readable summaries.
+- [ ] Multi-subject comparison matrix and report generation into `storage/reports/`.

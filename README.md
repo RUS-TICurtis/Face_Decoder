@@ -100,6 +100,16 @@ Visit the interactive Swagger API documentation at:
   - **Payload**: `multipart/form-data` with `file: UploadFile`
   - **Returns**: `file_id`, dimensions, size, sanitized storage path.
 
+### Face Detection & Cropping (Week 3)
+- `POST /api/v1/faces/detect/{file_id}`
+  - Runs OpenCV YuNet face detection on an uploaded image.
+  - Extracts bounding box + 5 facial landmarks (eyes, nose, mouth corners).
+  - Automatically crops padded face chips to `storage/processed_faces/`.
+- `POST /api/v1/faces/detect-and-crop`
+  - Accepts a direct file upload, stores the raw image, and detects/crops faces in one step.
+- `GET /static/faces/{crop_filename}`
+  - Static mount for viewing/fetching cropped face chips.
+
 ### Semblance & Affect Analysis
 - `GET /api/v1/semblance/detect/{file_id}`
   - Detects faces and extracts affective emotion scores (valence, arousal, primary feeling).

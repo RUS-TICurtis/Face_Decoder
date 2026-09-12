@@ -1,6 +1,8 @@
 from app.schemas.face import (
     ImageDimensions,
     ImageUploadResponse,
+    LandmarkPoint,
+    FacialLandmarks,
     FaceBoundingBox,
     EmotionAffectProfile,
     DetectedFace,
@@ -12,6 +14,8 @@ from app.schemas.face import (
 __all__ = [
     "ImageDimensions",
     "ImageUploadResponse",
+    "LandmarkPoint",
+    "FacialLandmarks",
     "FaceBoundingBox",
     "EmotionAffectProfile",
     "DetectedFace",

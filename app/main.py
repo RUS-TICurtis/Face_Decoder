@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.api.routes_upload import router as upload_router
+from app.api.routes_faces import router as faces_router
 from app.api.routes_semblance import router as semblance_router
 from app.services.file_service import ensure_storage_directories
 
@@ -18,7 +20,7 @@ app = FastAPI(
     )
 )
 
-# CORS configuration for web integration
+# CORS configuration for web & mobile integration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,11 +29,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API Routers
+# Mount static directories for serving raw and processed images
+app.mount("/static/raw", StaticFiles(directory=str(settings.RAW_IMAGES_DIR)), name="raw_images")
+app.mount("/static/faces", StaticFiles(directory=str(settings.PROCESSED_FACES_DIR)), name="processed_faces")
+
+# API Routers (v1)
 app.include_router(upload_router, prefix=settings.API_V1_PREFIX)
+app.include_router(faces_router, prefix=settings.API_V1_PREFIX)
 app.include_router(semblance_router, prefix=settings.API_V1_PREFIX)
-# Backward-compatibility for raw /upload
+
+# Top-level aliases
 app.include_router(upload_router)
+app.include_router(faces_router)
+app.include_router(semblance_router)
 
 @app.get("/", tags=["System"])
 async def root():
