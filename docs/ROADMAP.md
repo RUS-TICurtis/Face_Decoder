@@ -1,27 +1,56 @@
-# Development Roadmap: Facial Recognition & Semblance Engine
+# Development Roadmap: Face Decoder
+*Personalized Facial Resemblance & Perceptual Affinity Engine*
 
-## Phase 1: Core Foundation & Modular Filing System (Completed)
-- [x] Establish comprehensive `.gitignore` across Python environments, IDEs, and binary storage directories.
-- [x] Implement structured file storage taxonomy with `.gitkeep` directory preservation.
+> See `docs/REFERENCE_PROJECTS_AND_TECHNOLOGIES.md` for the full technology reference map.
+
+---
+
+## Phase 1: Core Foundation & Modular Filing System ✅
+- [x] Establish `.gitignore`, structured file storage taxonomy, and `.gitkeep` preservation.
 - [x] Modularize `app/` into `core/`, `api/`, `schemas/`, `services/`, and `utils/`.
-- [x] Create Pydantic v2 schemas for face coordinates, emotional affect profiles, and semblance metrics.
 - [x] Build upload pipeline with UUID tracking, header validation, and metadata extraction.
-- [x] Author comprehensive documentation (`README.md`, `ARCHITECTURE.md`, `FILING_AND_STORAGE_SYSTEM.md`).
+- [x] Author comprehensive documentation (`README.md`, `ARCHITECTURE.md`).
 
-## Phase 2: Computer Vision & Landmark Extraction (Completed / Week 3 Milestone)
-- [x] Integrate high-precision face detection backend (OpenCV YuNet ONNX with automated model caching).
-- [x] Extract 5 key facial landmarks: right eye, left eye, nose tip, mouth right, mouth left.
-- [x] Implement boundary-safe aspect-ratio padding and automatic face chip cropping.
-- [x] Store cropped face chips into `storage/processed_faces/` and expose via `/static/faces/`.
-- [x] Provide endpoints: `POST /api/v1/faces/detect/{file_id}` and `POST /api/v1/faces/detect-and-crop`.
+## Phase 2: Computer Vision & Landmark Extraction ✅
+- [x] Integrate high-precision face detection (OpenCV YuNet ONNX + automated model caching).
+- [x] Extract 5 key facial landmarks: right eye, left eye, nose tip, mouth corners.
+- [x] Implement boundary-safe padded face chip cropping → `storage/processed_faces/`.
+- [x] Endpoints: `POST /api/v1/faces/detect/{file_id}` and `POST /api/v1/faces/detect-and-crop`.
 
-## Phase 3: Face Embeddings & Similarity (Weeks 5–8)
-- [ ] Implement ArcFace / SFace 512-dimensional facial embedding generation.
-- [ ] Integrate FAISS vector index for nearest-neighbor similarity search.
-- [ ] Pairwise structural likeness computation (cosine similarity & Euclidean distance).
+## Phase 2.5: Vibe Analysis & Frontend MVP ✅
+- [x] Integrate Gemini 3.6 Flash Vision API for zero-shot archetype/aesthetic scoring.
+- [x] Build modular React + Vite frontend with glassmorphism design system.
+- [x] Implement FaceUploader, VibeDashboard, and BaselineCreator components.
+- [x] Create tab-based navigation between "Analyze Photo" and "Define Baselines".
+- [x] Produce scores for: Approachable, Regal, Mysterious, Trustworthy, cute, 10/10, spec, beautiful, handsome.
 
-## Phase 4: Archetype Modeling & Semblance Analysis (Weeks 9–10)
-- [ ] User archetype base-face model: centroid vector synthesis $\frac{1}{N}\sum \vec{v}_i$.
-- [ ] Likeability & human feeling decomposition: Symmetry, Averageness, Warmth (smile), and Structural Softness.
-- [ ] Natural language Explanation Engine converting metrics to human-readable summaries.
-- [ ] Multi-subject comparison matrix and report generation into `storage/reports/`.
+## Phase 3: ArcFace Embeddings & Vector Search (Next)
+> **Reference**: albertkao227/face-search architecture, haydenjeune/lookalike, InsightFace Server
+- [ ] Replace YuNet with InsightFace / RetinaFace for higher-fidelity detection + alignment.
+- [ ] Generate ArcFace 512-D identity embeddings per face chip.
+- [ ] Build a **swappable vector store adapter** (FAISS now → Qdrant/Milvus later).
+- [ ] Implement pairwise cosine similarity and Euclidean distance search.
+- [ ] Produce **Score ①: Identity Similarity** and **Score ②: Resemblance** per face pair.
+
+## Phase 4: Personal Archetype & Affinity Engine
+> **Reference**: haydenjeune/lookalike, Microsoft Azure Find Similar
+- [ ] Persist Baseline subjects to PostgreSQL (name, reference photos, embedding centroid).
+- [ ] Compute personal archetype vector: `centroid = (1/N) Σ v_i` across reference faces.
+- [ ] Build cosine-similarity comparison of new face against archetype centroid.
+- [ ] Produce **Score ④: Personal Affinity** with delta breakdown.
+- [ ] Connect frontend "Save Baseline" button to backend database.
+
+## Phase 5: Perceptual Appeal & Explanation Engine
+> **Reference**: FaceHeauty (heatmaps), SCUT-FBP5500 dataset, BeautyPredict
+- [ ] Fine-tune or integrate a perceptual attractiveness model on SCUT-FBP5500 dataset.
+- [ ] Produce **Score ③: Perceptual Appeal** with regional contribution heatmap.
+- [ ] Build Explanation Engine: convert embedding delta → natural language summary.
+- [ ] Target output: "Eye region (91%), Facial symmetry (86%), Face proportions (84%) are primary similarity drivers."
+
+## Phase 6: Scale, Search & Casting Engine
+> **Reference**: SENTINEL (million-scale), bassalemi/face-recognition-search
+- [ ] Swap FAISS for Qdrant (tens of thousands of faces).
+- [ ] Build Face Library explorer: search, filter, bulk-index celebrity/casting databases.
+- [ ] Implement duplicate detection via perceptual hashing.
+- [ ] Support video frame sampling as input source.
+
