@@ -3,13 +3,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
+from app.core.database import create_db_and_tables
 from app.api.routes_upload import router as upload_router
 from app.api.routes_faces import router as faces_router
 from app.api.routes_semblance import router as semblance_router
+from app.api.routes_baselines import router as baselines_router
+from app.api.routes_library import router as library_router
+from app.api.routes_history import router as history_router
 from app.services.file_service import ensure_storage_directories
+from contextlib import asynccontextmanager
 
 # Ensure filing system hierarchy exists on startup
 ensure_storage_directories()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    create_db_and_tables()
+    yield
+    # Shutdown
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -17,7 +29,8 @@ app = FastAPI(
     description=(
         "An intelligent computer vision platform for Facial Recognition, "
         "Human Emotion & Affect Decomposition, and Semblance Likeness Analysis."
-    )
+    ),
+    lifespan=lifespan
 )
 
 # CORS configuration for web & mobile integration
@@ -37,11 +50,17 @@ app.mount("/static/faces", StaticFiles(directory=str(settings.PROCESSED_FACES_DI
 app.include_router(upload_router, prefix=settings.API_V1_PREFIX)
 app.include_router(faces_router, prefix=settings.API_V1_PREFIX)
 app.include_router(semblance_router, prefix=settings.API_V1_PREFIX)
+app.include_router(baselines_router, prefix=settings.API_V1_PREFIX)
+app.include_router(library_router, prefix=settings.API_V1_PREFIX)
+app.include_router(history_router, prefix=settings.API_V1_PREFIX)
 
 # Top-level aliases
 app.include_router(upload_router)
 app.include_router(faces_router)
 app.include_router(semblance_router)
+app.include_router(baselines_router)
+app.include_router(library_router)
+app.include_router(history_router)
 
 @app.get("/", tags=["System"])
 async def root():

@@ -97,4 +97,28 @@ storage/reports/*
 storage/cache/*
 !storage/cache/.gitkeep
 
+storage/qdrant/
+*.sqlite3
+*.db
+storage/*.sqlite3
+storage/*.db
+
+# ==========================================
+# Local Testing & Ad-hoc Test Media
+# ==========================================
+test_*.jpg
+test_*.jpeg
+test_*.png
+test_*.webp
+test_*.mp4
+tests_output/
+test_output/
+*.test.jpg
+*.test.png
+sample_*.jpg
+sample_*.png
+temp_*/
+scratch/
+*.log
+
 .agent/*

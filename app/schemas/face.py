@@ -33,10 +33,17 @@ class FaceBoundingBox(BaseModel):
     height: int
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
 
+class RegionalContributions(BaseModel):
+    eyes: int = Field(default=0, ge=0, le=100)
+    nose: int = Field(default=0, ge=0, le=100)
+    mouth: int = Field(default=0, ge=0, le=100)
+    jawline_symmetry: int = Field(default=0, ge=0, le=100)
+    proportions: int = Field(default=0, ge=0, le=100)
+
 class EmotionAffectProfile(BaseModel):
     """
     Affective and emotional sentiment breakdown representing human feelings
-    and micro-expressions.
+    and micro-expressions, as well as the new Explanation Engine components.
     """
     primary_feeling: str
     valence: float = Field(
@@ -55,6 +62,18 @@ class EmotionAffectProfile(BaseModel):
         default_factory=dict,
         description="Confidence scores per emotion archetype (e.g., joy, serenity, sorrow, tension, wonder, neutral)"
     )
+    # New Phase 5 fields
+    perceptual_appeal: int = Field(
+        default=50,
+        ge=0,
+        le=100,
+        description="Score 3: Overall Perceptual Appeal (proxy for SCUT-FBP5500)"
+    )
+    explanation: str = Field(
+        default="",
+        description="Natural language summary of the similarity or aesthetic drivers."
+    )
+    regional_contributions: Optional[RegionalContributions] = None
 
 class DetectedFace(BaseModel):
     face_id: str
@@ -65,6 +84,7 @@ class DetectedFace(BaseModel):
     crop_filename: Optional[str] = None
     crop_path: Optional[str] = None
     affect: Optional[EmotionAffectProfile] = None
+    embedding: Optional[List[float]] = Field(default=None, description="512-D ArcFace embedding")
 
 class FaceAnalysisResponse(BaseModel):
     file_id: str
@@ -76,19 +96,17 @@ class SemblanceComparisonRequest(BaseModel):
     source_file_id: str
     target_file_id: str
 
+class IdentitySimilarityScore(BaseModel):
+    score: float = Field(ge=0.0, le=1.0, description="Normalized score 0-1, where 1 means exact match")
+    distance: float = Field(description="Cosine distance between embeddings")
+    is_same_person: bool = Field(description="True if score > 0.85 threshold")
+
+class ResemblanceScore(BaseModel):
+    score: float = Field(ge=0.0, le=1.0, description="Normalized visual resemblance score 0-1")
+    distance: float = Field(description="Euclidean distance between embeddings")
+
 class SemblanceComparisonResponse(BaseModel):
     source_file_id: str
     target_file_id: str
-    structural_semblance: float = Field(
-        description="Visual / geometric likeness score between faces (0.0 to 1.0)"
-    )
-    emotional_semblance: float = Field(
-        description="Emotional and feeling semblance score between expressions (0.0 to 1.0)"
-    )
-    composite_semblance: float = Field(
-        description="Combined semblance score weighting structural and emotional likeness (0.0 to 1.0)"
-    )
-    source_affect: Optional[EmotionAffectProfile] = None
-    target_affect: Optional[EmotionAffectProfile] = None
-    verdict: str
-    notes: str
+    identity: IdentitySimilarityScore
+    resemblance: ResemblanceScore

@@ -11,7 +11,20 @@ pydantic-settings>=2.2.0
 opencv-python-headless>=5.0.0
 numpy>=2.0.0
 pillow>=10.2.0
+scipy>=1.11.0
 
 # Testing
 pytest>=8.0.0
 httpx>=0.27.0
+
+# AI & Machine Learning
+google-genai>=0.2.0
+
+# Phase 3/6 - Embeddings & Vector Search
+insightface>=0.7.3
+onnxruntime>=1.15.0
+faiss-cpu>=1.7.4
+qdrant-client>=1.7.0
+ImageHash>=4.3.1
+
+sqlmodel>=0.0.16

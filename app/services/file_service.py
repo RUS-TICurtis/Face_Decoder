@@ -65,11 +65,15 @@ def save_upload_file(upload_file: UploadFile) -> Tuple[str, str, Path, int, Tupl
     
     return file_id, stored_filename, destination_path, file_size, dimensions, img_format
 
-def resolve_file_path(file_id_or_name: str) -> Optional[Path]:
+def resolve_file_path(file_id_or_name: str, is_processed: bool = False) -> Optional[Path]:
     """
     Find an image in storage by its UUID prefix or exact filename.
+    Searches RAW_IMAGES_DIR by default, or PROCESSED_FACES_DIR if is_processed=True.
     """
-    for file in settings.RAW_IMAGES_DIR.iterdir():
+    search_dir = settings.PROCESSED_FACES_DIR if is_processed else settings.RAW_IMAGES_DIR
+    if not search_dir.exists():
+        return None
+    for file in search_dir.iterdir():
         if file.is_file() and not file.name.startswith("."):
             if file.name.startswith(file_id_or_name) or file.name == file_id_or_name:
                 return file

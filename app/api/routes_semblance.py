@@ -5,8 +5,27 @@ from app.schemas.face import (
     SemblanceComparisonResponse,
 )
 from app.services.semblance_service import semblance_service
+from app.services.vibe_service import vibe_service
+from app.core.config import settings
 
 router = APIRouter(prefix="/semblance", tags=["Semblance & Affect Analysis"])
+
+@router.post("/analyze/{crop_id}")
+async def analyze_vibe(crop_id: str):
+    """
+    Analyzes a processed face crop using Gemini API to score subjective archetypes and aesthetics.
+    """
+    crop_path = settings.PROCESSED_FACES_DIR / crop_id
+    if not crop_path.exists():
+        raise HTTPException(status_code=404, detail="Face crop not found")
+    
+    try:
+        result = vibe_service.analyze_face(crop_path)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=501, detail=str(e)) # Not Implemented / API key missing
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Vibe analysis failed: {str(e)}")
 
 @router.get("/detect/{file_id}", response_model=FaceAnalysisResponse)
 async def detect_face_and_affect(file_id: str):
